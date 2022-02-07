@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
 
 void main() {
   runApp(MyApp());
@@ -30,13 +31,25 @@ class MyAppPage extends StatefulWidget {
 }
 
 class _MyAppPageState extends State<MyAppPage> {
-  void _toForward() {}
+  final _channel = WebSocketChannel.connect(
+    Uri.parse('wss://echo.websocket.org'),
+  );
 
-  void _turnRight() {}
+  void _toForward() {
+    _channel.sink.add('F');
+  }
 
-  void _turnLeft() {}
+  void _turnRight() {
+    _channel.sink.add('R');
+  }
 
-  void _turnBack() {}
+  void _turnLeft() {
+    _channel.sink.add('L');
+  }
+
+  void _turnBack() {
+    _channel.sink.add('B');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -47,6 +60,13 @@ class _MyAppPageState extends State<MyAppPage> {
       body: Center(
         child: Row(
           children: [
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                padding: const EdgeInsets.only(left: 20.0, right: 30.0),
+              ),
+              onPressed: _turnLeft,
+              child: const Icon(Icons.arrow_back),
+            ),
             Column(
               children: [
                 ElevatedButton(
@@ -60,28 +80,27 @@ class _MyAppPageState extends State<MyAppPage> {
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.only(left: 20.0, right: 30.0),
                   ),
-                  onPressed: _turnLeft,
-                  child: const Icon(Icons.arrow_back),
-                ),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.only(left: 20.0, right: 30.0),
-                  ),
-                  onPressed: _turnRight,
-                  child: const Icon(Icons.arrow_forward),
-                ),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.only(left: 20.0, right: 30.0),
-                  ),
                   onPressed: _turnBack,
                   child: const Icon(Icons.arrow_downward),
                 ),
               ],
-            )
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                padding: const EdgeInsets.only(left: 20.0, right: 30.0),
+              ),
+              onPressed: _turnRight,
+              child: const Icon(Icons.arrow_forward),
+            ),
           ],
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _channel.sink.close();
+    super.dispose();
   }
 }
