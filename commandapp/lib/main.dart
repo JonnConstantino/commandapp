@@ -17,7 +17,7 @@ class _MyAppState extends State<MyApp> {
       theme: ThemeData(
         primarySwatch: Colors.green,
       ),
-      home: MyAppPage(),
+      home: const MyAppPage(),
     );
   }
 }
@@ -40,43 +40,47 @@ class _MyAppPageState extends State<MyAppPage> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: Text('CommandApp'),
-        ),
-        body: Center(
-          child: Container(
-            child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              ElevatedButton(
-                onPressed: _toForward,
-                child: Icon(Icons.arrow_upward),
-              ),
-              const SizedBox(height: 30),
-              children: [Column(
-                ElevatedButton(
-                onPressed: _turnRight,
-                child: Icon(Icons.arrow_forward),
-              ),
-              const SizedBox(height: 30),
-              ElevatedButton(
-                onPressed: _turnLeft,
-                child: Icon(Icons.arrow_back),
-              ),
-              const SizedBox(height: 30),
-              ElevatedButton(
-                onPressed: _turnBack,
-                child: Icon(Icons.arrow_downward),
-              ),
-              const SizedBox(height: 30),
-              ],
-              ),
-            ],
-          ),
-        ),
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Command App'),
       ),
+      body: Center(
+        child: Row(
+          children: [
+            Column(
+              children: [
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.only(left: 20.0, right: 30.0),
+                  ),
+                  onPressed: _toForward,
+                  child: const Icon(Icons.arrow_upward),
+                ),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.only(left: 20.0, right: 30.0),
+                  ),
+                  onPressed: _turnLeft,
+                  child: const Icon(Icons.arrow_back),
+                ),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.only(left: 20.0, right: 30.0),
+                  ),
+                  onPressed: _turnRight,
+                  child: const Icon(Icons.arrow_forward),
+                ),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.only(left: 20.0, right: 30.0),
+                  ),
+                  onPressed: _turnBack,
+                  child: const Icon(Icons.arrow_downward),
+                ),
+              ],
+            )
+          ],
+        ),
       ),
     );
   }
