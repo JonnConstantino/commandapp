@@ -31,24 +31,36 @@ class MyAppPage extends StatefulWidget {
 }
 
 class _MyAppPageState extends State<MyAppPage> {
-  final _channel = WebSocketChannel.connect(
-    Uri.parse('wss://echo.websocket.org'),
+  final TextEditingController _controller = TextEditingController();
+  late final channel = WebSocketChannel.connect(
+    Uri.parse('ws://127.0.0.1:4567'),
   );
 
+  // "Protocol":
+  //   f = robot forward
+  //   b = robot backward
+  //   d = robot turn clockwise
+  //   e = robot turn counter-clockwise
+  //   sxxx = servo, onde xxx é o ângulo entre 000 e 180 (sempre use 3 dígitos)
+
   void _toForward() {
-    _channel.sink.add('F');
+    channel.sink.add('f');
   }
 
   void _turnRight() {
-    _channel.sink.add('R');
+    channel.sink.add('r');
   }
 
   void _turnLeft() {
-    _channel.sink.add('L');
+    channel.sink.add('l');
   }
 
   void _turnBack() {
-    _channel.sink.add('B');
+    channel.sink.add('b');
+  }
+
+  void _turnCamera() {
+    channel.sink.add('_msg');
   }
 
   @override
@@ -57,7 +69,8 @@ class _MyAppPageState extends State<MyAppPage> {
       appBar: AppBar(
         title: const Text('Command App'),
       ),
-      body: Center(
+      body: Padding(
+        padding: const EdgeInsets.all(20.0),
         child: Row(
           children: [
             ElevatedButton(
@@ -68,7 +81,33 @@ class _MyAppPageState extends State<MyAppPage> {
               child: const Icon(Icons.arrow_back),
             ),
             Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                Row(
+                  children: [
+                    Form(
+                      child: TextFormField(
+                        controller: _controller,
+                        decoration:
+                            const InputDecoration(labelText: 'Send a message'),
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    StreamBuilder(
+                      stream: channel.stream,
+                      builder: (context, snapshot) {
+                        return Text(snapshot.hasData ? '${snapshot.data}' : '');
+                      },
+                    ),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.only(left: 20.0, right: 30.0),
+                      ),
+                      onPressed: _turnCamera,
+                      child: const Icon(Icons.send),
+                    ),
+                  ],
+                ),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.only(left: 20.0, right: 30.0),
@@ -100,7 +139,7 @@ class _MyAppPageState extends State<MyAppPage> {
 
   @override
   void dispose() {
-    _channel.sink.close();
+    channel.sink.close();
     super.dispose();
   }
 }
