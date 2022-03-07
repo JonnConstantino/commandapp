@@ -60,7 +60,9 @@ class _MyAppPageState extends State<MyAppPage> {
   }
 
   void _turnCamera() {
-    channel.sink.add('_msg');
+    if (_controller.text.isNotEmpty) {
+      channel.sink.add(_controller.text);
+    }
   }
 
   @override
@@ -85,11 +87,13 @@ class _MyAppPageState extends State<MyAppPage> {
               children: [
                 Row(
                   children: [
-                    Form(
+                    SizedBox(
+                      height: 200.0,
+                      width: 200.0,
                       child: TextFormField(
                         controller: _controller,
-                        decoration:
-                            const InputDecoration(labelText: 'Send a message'),
+                        decoration: const InputDecoration(
+                            labelText: 'Digite o ângulo da câmera'),
                       ),
                     ),
                     const SizedBox(height: 24),
