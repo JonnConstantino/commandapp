@@ -87,6 +87,12 @@ class _MyAppPageState extends State<MyAppPage> {
               children: [
                 Row(
                   children: [
+                    // container do streaming da câmera
+                    Container(
+                      height: 200.0,
+                      width: 300.0,
+                    ),
+                    // caixa de texto para digitar o ângulo da câmera para virar
                     SizedBox(
                       height: 200.0,
                       width: 200.0,
@@ -97,6 +103,7 @@ class _MyAppPageState extends State<MyAppPage> {
                       ),
                     ),
                     const SizedBox(height: 24),
+                    // canal para enviar o ângulo da câmera
                     StreamBuilder(
                       stream: channel.stream,
                       builder: (context, snapshot) {
