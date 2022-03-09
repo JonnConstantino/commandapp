@@ -1,11 +1,14 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatefulWidget {
+  const MyApp({Key? key}) : super(key: key);
   @override
   _MyAppState createState() => _MyAppState();
 }
@@ -33,7 +36,7 @@ class MyAppPage extends StatefulWidget {
 class _MyAppPageState extends State<MyAppPage> {
   final TextEditingController _controller = TextEditingController();
   late final channel = WebSocketChannel.connect(
-    Uri.parse('ws://127.0.0.1:4567'),
+    Uri.parse('ws://127.0.0.1:8765'),
   );
 
   // "Protocol":
@@ -44,7 +47,7 @@ class _MyAppPageState extends State<MyAppPage> {
   //   sxxx = servo, onde xxx é o ângulo entre 000 e 180 (sempre use 3 dígitos)
 
   void _toForward() {
-    channel.sink.add('f');
+    channel.sink.add(utf8.encode('f'));
   }
 
   void _turnRight() {
@@ -52,7 +55,7 @@ class _MyAppPageState extends State<MyAppPage> {
   }
 
   void _turnLeft() {
-    channel.sink.add('l');
+    channel.sink.add(utf8.encode('l'));
   }
 
   void _turnBack() {
@@ -61,7 +64,7 @@ class _MyAppPageState extends State<MyAppPage> {
 
   void _turnCamera() {
     if (_controller.text.isNotEmpty) {
-      channel.sink.add(_controller.text);
+      channel.sink.add(utf8.encode(_controller.text));
     }
   }
 
@@ -73,75 +76,88 @@ class _MyAppPageState extends State<MyAppPage> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
-        child: Row(
+        child: Column(
+          verticalDirection: VerticalDirection.down,
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.only(left: 20.0, right: 30.0),
-              ),
-              onPressed: _turnLeft,
-              child: const Icon(Icons.arrow_back),
-            ),
             Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                const SizedBox(
+                  height: 200.0,
+                  width: 300.0,
+                ),
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    // container do streaming da câmera
-                    Container(
-                      height: 200.0,
-                      width: 300.0,
-                    ),
-                    // caixa de texto para digitar o ângulo da câmera para virar
                     SizedBox(
-                      height: 200.0,
-                      width: 200.0,
+                      height: 28.0,
+                      width: 280.0,
                       child: TextFormField(
                         controller: _controller,
                         decoration: const InputDecoration(
-                            labelText: 'Digite o ângulo da câmera'),
+                            labelText: 'Digite o ângulo da câmera ex.: sXXX'),
                       ),
-                    ),
-                    const SizedBox(height: 24),
-                    // canal para enviar o ângulo da câmera
-                    StreamBuilder(
-                      stream: channel.stream,
-                      builder: (context, snapshot) {
-                        return Text(snapshot.hasData ? '${snapshot.data}' : '');
-                      },
                     ),
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.only(left: 20.0, right: 30.0),
+                        padding: const EdgeInsets.only(left: 20.0, right: 20.0),
                       ),
                       onPressed: _turnCamera,
                       child: const Icon(Icons.send),
                     ),
                   ],
                 ),
+              ],
+            ),
+
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.only(left: 20.0, right: 30.0),
+                    padding: const EdgeInsets.only(top: 24.0, bottom: 24.0),
                   ),
-                  onPressed: _toForward,
-                  child: const Icon(Icons.arrow_upward),
+                  onPressed: _turnLeft,
+                  child: const Icon(Icons.arrow_back),
+                ),
+                Column(
+                  children: [
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.only(top: 24.0, bottom: 24.0),
+                      ),
+                      onPressed: _toForward,
+                      child: const Icon(Icons.arrow_upward),
+                    ),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.only(top: 24.0, bottom: 24.0),
+                      ),
+                      onPressed: _turnBack,
+                      child: const Icon(Icons.arrow_downward),
+                    ),
+                  ],
                 ),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.only(left: 20.0, right: 30.0),
+                    padding: const EdgeInsets.only(top: 24.0, bottom: 24.0),
                   ),
-                  onPressed: _turnBack,
-                  child: const Icon(Icons.arrow_downward),
+                  onPressed: _turnRight,
+                  child: const Icon(Icons.arrow_forward),
                 ),
               ],
             ),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.only(left: 20.0, right: 30.0),
-              ),
-              onPressed: _turnRight,
-              child: const Icon(Icons.arrow_forward),
-            ),
+            // SizedBox(
+            //   height: 24,
+            //   width: 24,
+            //   child: StreamBuilder(
+            //     stream: channel.stream,
+            //     builder: (context, snapshot) {
+            //       return Text(snapshot.hasData ? '${snapshot.data}' : '');
+            //     },
+            //   ),
+            // ),
           ],
         ),
       ),
