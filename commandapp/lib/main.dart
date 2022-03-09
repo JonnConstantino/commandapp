@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
@@ -47,24 +45,29 @@ class _MyAppPageState extends State<MyAppPage> {
   //   sxxx = servo, onde xxx é o ângulo entre 000 e 180 (sempre use 3 dígitos)
 
   void _toForward() {
-    channel.sink.add(utf8.encode('f'));
+    channel.sink.add('f');
+    // channel.sink.add(json.encode('f'));
   }
 
   void _turnRight() {
-    channel.sink.add('r');
+    channel.sink.add('d');
+    // channel.sink.add(json.encode('d'));
   }
 
   void _turnLeft() {
-    channel.sink.add(utf8.encode('l'));
+    channel.sink.add('e');
+    // channel.sink.add(json.encode('e'));
   }
 
   void _turnBack() {
     channel.sink.add('b');
+    // channel.sink.add(json.encode('b'));
   }
 
   void _turnCamera() {
     if (_controller.text.isNotEmpty) {
-      channel.sink.add(utf8.encode(_controller.text));
+      channel.sink.add(_controller.text);
+      // channel.sink.add(json.encode(_controller.text));
     }
   }
 
@@ -96,7 +99,7 @@ class _MyAppPageState extends State<MyAppPage> {
                       child: TextFormField(
                         controller: _controller,
                         decoration: const InputDecoration(
-                            labelText: 'Digite o ângulo da câmera ex.: sXXX'),
+                            hintText: 'Digite o ângulo da câmera ex.: sXXX'),
                       ),
                     ),
                     ElevatedButton(
@@ -110,7 +113,6 @@ class _MyAppPageState extends State<MyAppPage> {
                 ),
               ],
             ),
-
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -149,8 +151,8 @@ class _MyAppPageState extends State<MyAppPage> {
               ],
             ),
             // SizedBox(
-            //   height: 24,
-            //   width: 24,
+            //   height: 200.0,
+            //   width: 200.0,
             //   child: StreamBuilder(
             //     stream: channel.stream,
             //     builder: (context, snapshot) {
@@ -167,6 +169,7 @@ class _MyAppPageState extends State<MyAppPage> {
   @override
   void dispose() {
     channel.sink.close();
+    _controller.dispose();
     super.dispose();
   }
 }
